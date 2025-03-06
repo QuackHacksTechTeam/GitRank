@@ -39,6 +39,33 @@ def serve_react_app(path):
 
 # ----------------------- API --------------------------
 
+@app.route('/api/repo-loc', methods=["GET"])
+def get_repo_lines_of_code(): 
+    """
+    Sends a list of all repos with their total lines of code
+
+    In the JSON form 
+    [
+        {
+            repo_name: string, 
+            lines_of_code: number
+        }
+        ...
+    ]
+    """
+    all_repo_loc = {}
+    for owner, reponame in OWNERS_REPOS: 
+        try: 
+            repo_loc = requests.lines_of_code_by_repo(owner, reponame)
+            all_repo_loc.update(repo_loc)
+
+        except Exception as error: 
+            return jsonify({ "Error": str(error) }), 500
+
+    all_user_commit_labeled = [{"repo_name": user, "lines_of_code": count} for user, count in all_repo_loc.items()]
+    return jsonify(all_user_commit_labeled)
+
+
 @app.route('/api/user-loc', methods=["GET"])
 def get_user_lines_of_code(): 
     """
@@ -73,6 +100,8 @@ def get_user_lines_of_code():
     return jsonify(all_user_commit_labeled)
 
 
+
+
 @app.route('/api/repo-commits', methods=["GET"])
 def get_repo_commits(): 
     """
@@ -99,6 +128,8 @@ def get_repo_commits():
     
     return jsonify(all_repo_commits_labeld)
         
+
+    
 
 
 @app.route('/api/user-commits', methods=['GET'])

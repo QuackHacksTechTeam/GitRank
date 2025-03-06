@@ -34,6 +34,8 @@ def is_excluded_file(file) -> bool:
     Used to check if a file commitment was likely to come from a 
     source that should not contribute to line count, e.g. pushing node modules 
     """
+    if not file.name.endswith(('.py', '.js', '.ts', '.tsx', '.jsx', '.java', '.cpp', '.c')):  
+        return True
 
     if file.additions + file.deletions > LINE_THRESHOLD: 
         return True 
